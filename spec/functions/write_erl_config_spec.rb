@@ -3,9 +3,12 @@
 require 'spec_helper'
 
 describe 'write_erl_config', :type => :puppet_function do
-  it { subject.call({ :a => 4 }, :to_s).should eq('[{a, 4}].') }
+  def strip str
+    str.gsub("\t", "").gsub("\n", "")
+  end
+  it { strip(subject.call([{ :a => 4 }])).should eq('[{a, 4}].') }
   it 'should gen correct erlang' do
-    output = subject.call({
+    output = subject.call([{
       :lager => {
         :handlers => {
           :lager_file_backend   => [
@@ -14,11 +17,11 @@ describe 'write_erl_config', :type => :puppet_function do
           :error_logger_redirect => true
         }
       }
-    }, :to_s)
-    output.should eq('[{lager, [{handlers, [{error_logger_redirect, true}, {lager_file_backend, [{"/var/log/riak/error.log", error, 10485760, "$D0", 5}]}]}]}].')
+    }])
+    strip(output).should eq('[{lager, [{handlers, [{error_logger_redirect, true},{lager_file_backend, [{"/var/log/riak/error.log", error, 10485760, "$D0", 5}]}]}]}].')
   end
   it 'should output numbers as numbers' do
-    subject.call({ :a => [['__tuple', '__atom_mykey', 5 ]]}, :to_s).
+    strip(subject.call([{ :a => [['__tuple', '__atom_mykey', 5 ]]}])).
       should eq('[{a, [{mykey, 5}]}].')
   end
 end
