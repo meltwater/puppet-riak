@@ -28,6 +28,7 @@ class riak::appconfig(
   $template = hiera('template', ''),
   $absent = false,
   $search_enabled = hiera('search_enabled', false)
+  $ring_size = hiera('ring_creation_size', 64)
 ) {
 
   require riak::params
@@ -45,7 +46,7 @@ class riak::appconfig(
     },
     riak_core => {
       ring_state_dir     => "${$riak::params::data_dir}/ring",
-      ring_creation_size => 64,
+      ring_creation_size => $ring_size,
       http               => {
         "__string_${$::ipaddress}" => 8098,
       },
