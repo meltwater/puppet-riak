@@ -27,7 +27,7 @@ class riak::appconfig(
   $source = hiera('source', ''),
   $template = hiera('template', ''),
   $absent = false,
-  $search_enabled = hiera('search_enabled', false)
+  $search_enabled = hiera('search_enabled', false),
   $ring_size = hiera('ring_creation_size', 64)
 ) {
 
