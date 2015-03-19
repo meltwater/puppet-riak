@@ -197,4 +197,35 @@ module Puppet::Parser::Util
       to_a.join("\n")
     end
   end
+
+  class AppConfig
+    def initialize value
+      @config = convert value
+    end
+
+    def to_s
+      out = ''
+      @config.each_with_index do |kv, i|
+        out = out + ( i % 2 == 0 ?
+                      kv.to_s :
+                      " = #{kv.to_s}\n"
+                  )
+      end
+      out
+    end
+
+    def pp(level=0)
+      to_s
+    end
+
+    def convert config, parent = []
+      config.sort.map do |key, value|
+        if value.is_a? ::Hash
+          convert( value, parent+[key] )
+        else
+          [ (parent+[key]).join("."), value.to_s.gsub(/^__[^_]+_/, '') ]
+        end
+      end .flatten
+    end
+  end
 end

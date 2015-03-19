@@ -26,7 +26,8 @@ class riak::appconfig(
   $cfg = {},
   $source = hiera('source', ''),
   $template = hiera('template', ''),
-  $absent = false
+  $absent = false,
+  $riak2 = false
 ) {
 
   require riak::params
@@ -123,10 +124,24 @@ class riak::appconfig(
     default => 'present',
   }
 
-  $manage_template = $template ? {
-    ''      => write_erl_config($appcfg),
-    default => template($template),
-  }
+  # $testcfg = {
+  # leveldb         => { compression => 'on' },
+  # riak_control    => 'on',
+  # something       => 'foo',
+  # userlist => ['__tuple', 'user', 'pass'],
+  # somewthing_else => {
+  # bar           => 'baz'
+  # }
+  # }
+
+  $manage_template = write_erl_config($appcfg, 'config') 
+  # = $template ? {
+  # ''        => $riak2 ? {
+  # true    => write_riak_conf($appcfg),
+  # default => write_erl_config($appcfg)
+  # },
+  # default   => template($template),
+  # }
 
   $manage_source = $source ? {
     ''      => undef,
@@ -148,19 +163,32 @@ class riak::appconfig(
     before  => Anchor['riak::appconfig::end'],
   }
 
-  file { "${$appcfg[riak_core][platform_etc_dir]}/app.config":
-    ensure  => $manage_file,
-    content => $manage_template,
-    source  => $manage_source,
-    owner   => 'riak',
-    group   => 'riak',
-    require => [
-      File["${$appcfg[riak_core][platform_log_dir]}"],
-      File["${$appcfg[riak_core][platform_lib_dir]}"],
-      File["${$appcfg[riak_core][platform_data_dir]}"],
-      Anchor['riak::appconfig::start'],
-    ],
-    before  => Anchor['riak::appconfig::end'],
+  if ( $riak2 ) {
+    file { "${$appcfg[riak_core][platform_etc_dir]}/riak.conf":
+      ensure  => $manage_file,
+      content => $manage_template,
+      source  => $manage_source,
+      require => [
+        File["${$appcfg[riak_core][platform_log_dir]}"],
+        File["${$appcfg[riak_core][platform_lib_dir]}"],
+        File["${$appcfg[riak_core][platform_data_dir]}"],
+        Anchor['riak::appconfig::start'],
+      ],
+      before  => Anchor['riak::appconfig::end'],
+    }
+  } else {
+    file { "${$appcfg[riak_core][platform_etc_dir]}/app.config":
+      ensure  => $manage_file,
+      content => $manage_template,
+      source  => $manage_source,
+      require => [
+        File["${$appcfg[riak_core][platform_log_dir]}"],
+        File["${$appcfg[riak_core][platform_lib_dir]}"],
+        File["${$appcfg[riak_core][platform_data_dir]}"],
+        Anchor['riak::appconfig::start'],
+      ],
+      before  => Anchor['riak::appconfig::end'],
+    }
   }
 
   anchor { 'riak::appconfig::end': }

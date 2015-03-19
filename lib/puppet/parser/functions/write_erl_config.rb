@@ -24,8 +24,15 @@ module Puppet::Parser::Functions
     end
 
     h = args[0] # hash
-    s = (args.length == 2 && args[1]) || :pp # symbol
+    t = (args.length >= 2 && args[1]) || :erlang # symbol
+    s = (args.length == 3 && args[2]) || :pp # symbol
+    if t.to_s == 'erlang'
+      ::Puppet::Parser::Util::Config.new(h).send(s)
+    elsif t.to_s == 'config'
+      ::Puppet::Parser::Util::AppConfig.new(h).send(s)
+    else
+      raise(Puppet::ParseError, "unknown configuration type: #{t.to_s}")
+    end
 
-    ::Puppet::Parser::Util::Config.new(h).send(s)
   end
 end

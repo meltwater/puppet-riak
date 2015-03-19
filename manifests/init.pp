@@ -160,6 +160,11 @@ class riak (
     default: { $riak_pkg_ensure = $manage_package }
   }
 
+  case $version {
+    /^2/: { $riak2 = true }
+    default: { $riak2 = false }
+  }
+
   $manage_repos_real = $use_repos ? {
     true    => $manage_repos,
     default => false
@@ -245,6 +250,7 @@ class riak (
     source   => $source,
     template => $template,
     cfg      => $cfg,
+    riak2    => $riak2,
     require  => [
       Package[$package],
       File[$etc_dir],
