@@ -209,7 +209,7 @@ class riak (
 
   if $use_repos == true {
     package { $package:
-      ensure  => $riak_pkg_ensure,
+      ensure  => installed, #$riak_pkg_ensure,
       require => [
         Class[riak::config],
         Package[$riak::params::deps],
