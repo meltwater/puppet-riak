@@ -268,19 +268,20 @@ class riak (
     require      => Anchor['riak::start'],
     before       => Anchor['riak::end'],
   }
-
-  class { 'riak::vmargs':
-    absent  => $absent,
-    source   => $vmargs_source,
-    template => $vmargs_template,
-    cfg     => $vmargs_cfg,
-    require => [
-      Package[$package],
-      File[$etc_dir],
-      Anchor['riak::start'],
-    ],
-    before  => Anchor['riak::end'],
-    notify  => $manage_service_autorestart,
+  if ( ! $riak2 ) {
+    class { 'riak::vmargs':
+      absent   => $absent,
+      source   => $vmargs_source,
+      template => $vmargs_template,
+      cfg      => $vmargs_cfg,
+      require  => [
+        Package[$package],
+        File[$etc_dir],
+        Anchor['riak::start'],
+      ],
+      before   => Anchor['riak::end'],
+      notify   => $manage_service_autorestart,
+    }
   }
 
   group { 'riak':
