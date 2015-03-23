@@ -47,14 +47,14 @@ class riak::appconfig(
         async_threads            => 64,
         distribution_buffer_size => '64MB',
         max_ports                => 65536,
-        schedulers               => { 
-          compaction_of_load => 'false', 
-          force_wakeup_interval => 500 
+        schedulers               => {
+          compaction_of_load     => false,
+          force_wakeup_interval  => 500
         }
       },
       leveldb          => {
         maximum_memory => {
-          percent => 70 
+          percent      => 70
         }
       },
       listener     => {
