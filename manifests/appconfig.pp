@@ -104,7 +104,8 @@ class riak::appconfig(
       platform_etc_dir         => $riak::etc_dir,
       platform_lib_dir         => $riak::params::lib_dir,
       platform_log_dir         => $riak::log_dir,
-      storage_backend          => 'leveldb'
+      storage_backend          => 'leveldb',
+      nodename                 => "riak@${riak::ip}"
       }, $cfg), 
     default                  => merge_hashes({
       kernel                 => {
