@@ -307,20 +307,36 @@ class riak (
     ],
     before  => Anchor['riak::end'],
   }
-
-  service { 'riak':
-    ensure     => $manage_service_ensure,
-    enable     => $manage_service_enable,
-    hasrestart => $riak::params::has_restart,
-    require    => [
-      Class['riak::appconfig'],
-      Class['riak::vmargs'],
-      Class['riak::config'],
-      User['riak'],
-      Package[$package],
-      Anchor['riak::start'],
-    ],
-    before  => Anchor['riak::end'],
+  
+  if ( $riak2 ) {
+    service { 'riak':
+      ensure     => $manage_service_ensure,
+      enable     => $manage_service_enable,
+      hasrestart => $riak::params::has_restart,
+      require    => [
+        Class['riak::appconfig'],
+        Class['riak::config'],
+        User['riak'],
+        Package[$package],
+        Anchor['riak::start'],
+      ],
+      before     => Anchor['riak::end'],
+    }
+  } else {
+    service { 'riak':
+      ensure     => $manage_service_ensure,
+      enable     => $manage_service_enable,
+      hasrestart => $riak::params::has_restart,
+      require    => [
+        Class['riak::appconfig'],
+        Class['riak::vmargs'],
+        Class['riak::config'],
+        User['riak'],
+        Package[$package],
+        Anchor['riak::start'],
+      ],
+      before     => Anchor['riak::end'],
+    }
   }
 
   anchor { 'riak::end': }
