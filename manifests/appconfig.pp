@@ -239,6 +239,13 @@ class riak::appconfig(
       ],
       before  => Anchor['riak::appconfig::end'],
     }
+    # remove existing config if it exists
+    file { "${$appcfg[platform_etc_dir]}/app.config":
+      ensure => absent
+    }
+    file { "${$appcfg[platform_etc_dir]}/vm.args":
+      ensure => absent
+    }
   } else {
     file { [
         $appcfg[riak_core][platform_log_dir],
