@@ -70,5 +70,4 @@ class riak::params {
 
   $riak_uid = undef
   $riak_gid = undef
- 
 }

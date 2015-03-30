@@ -27,7 +27,7 @@ class riak::appconfig(
   $source = hiera('source', ''),
   $template = hiera('template', ''),
   $absent = false,
-  $riak2 = false
+  $riak2 = false,
 ) {
 
   require riak::params
@@ -38,7 +38,7 @@ class riak::appconfig(
     true           => merge_hashes({
       anti_entropy => 'active',
       bitcask      => {
-        data_root  => '($platform_data_dir)/bitcask',
+        data_root  => "${riak::data_dir}/bitcask",
         io_mode    => erlang
       },
       distributed_cookie         => 'riak',
@@ -69,18 +69,18 @@ class riak::appconfig(
       'log.crash'         => 'on',
       log         => {
         console => {
-          file  => '$(platform_log_dir)/console.log',
+          file  => "${riak::log_dir}/console.log",
           level => 'info'
         },
         crash                  => {
-          file                 => '$(platform_log_dir)/crash.log',
+          file                 => "${riak::log_dir}/crash.log",
           maximum_message_size => '64KB',
           rotation             => '$D0',
           'rotation.keep'      => 5,
           size                 => '10MB'
         },
         error  => {
-          file => '$(platform_log_dir)/error.log'
+          file => "${riak::log_dir}/error.log"
         },
         syslog => 'off'
       },
@@ -95,7 +95,6 @@ class riak::appconfig(
           warning_threshold => '5MB'
         }
       },
-      'riak_control.auth.mode' => 'off',
       riak_control             => 'off',
       ring_size                => 256,
       search                   => 'off',
@@ -106,7 +105,7 @@ class riak::appconfig(
       platform_log_dir         => $riak::log_dir,
       storage_backend          => 'leveldb',
       nodename                 => "riak@${riak::ip}"
-      }, $cfg), 
+      }, $cfg),
     default                  => merge_hashes({
       kernel                 => {
         inet_dist_listen_min => 6000,
@@ -125,7 +124,6 @@ class riak::appconfig(
         handoff_port      => 8099,
         dtrace_support    => false,
         platform_bin_dir  => $riak::params::bin_dir,
-        platform_data_dir => $riak::data_dir,
         platform_etc_dir  => $riak::etc_dir,
         platform_lib_dir  => $riak::params::lib_dir,
         platform_log_dir  => $riak::log_dir,
@@ -156,7 +154,7 @@ class riak::appconfig(
       bitcask => {
         data_root => "${$riak::data_dir}/bitcask",
       },
-      eleveldb => {
+      leveldb => {
         data_root => "${$riak::data_dir}/leveldb",
       },
       lager => {
@@ -186,7 +184,6 @@ class riak::appconfig(
       },
       riak_control => {
         enabled  => false,
-        auth     => 'userlist',
         userlist => ['__tuple', 'user', 'pass'],
         admin    => true,
       },
@@ -250,7 +247,6 @@ class riak::appconfig(
     file { [
         $appcfg[riak_core][platform_log_dir],
         $appcfg[riak_core][platform_lib_dir],
-        $appcfg[riak_core][platform_data_dir],
       ]:
       ensure  => directory,
       mode    => '0755',
@@ -266,7 +262,6 @@ class riak::appconfig(
       require => [
         File["${$appcfg[riak_core][platform_log_dir]}"],
         File["${$appcfg[riak_core][platform_lib_dir]}"],
-        File["${$appcfg[riak_core][platform_data_dir]}"],
         Anchor['riak::appconfig::start'],
       ],
       before  => Anchor['riak::appconfig::end'],

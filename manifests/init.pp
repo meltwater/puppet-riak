@@ -137,6 +137,15 @@ class riak (
 
   $pkgfile = "/tmp/${$package}-${$version}.${$riak::params::package_type}"
 
+  file { $data_dir:
+    ensure  => directory,
+    owner   => 'riak',
+    group   => 'riak',
+    mode    => '0755',
+    require => Anchor['riak::start'],
+    before  => Anchor['riak::end'],
+  }
+
   File {
     owner => 'root',
     group => 'root',
@@ -209,7 +218,7 @@ class riak (
 
   if $use_repos == true {
     package { $package:
-      ensure  => installed, #$riak_pkg_ensure,
+      ensure  => $version, #$riak_pkg_ensure,
       require => [
         Class[riak::config],
         Package[$riak::params::deps],
@@ -261,12 +270,12 @@ class riak (
   }
 
   class { 'riak::config':
-    absent       => $absent,
-    install_curl => $install_curl,
-    manage_repos => $manage_repos_real,
+    absent        => $absent,
+    install_curl  => $install_curl,
+    manage_repos  => $manage_repos_real,
     manage_ulimit => $manage_ulimit,
-    require      => Anchor['riak::start'],
-    before       => Anchor['riak::end'],
+    require       => Anchor['riak::start'],
+    before        => Anchor['riak::end'],
   }
   if ( ! $riak2 ) {
     class { 'riak::vmargs':
@@ -285,9 +294,9 @@ class riak (
   }
 
   group { 'riak':
-    ensure => present,
-    system => true,
-    gid => $riak_gid,
+    ensure  => present,
+    system  => true,
+    gid     => $riak_gid,
     require => [
       Package[$package],
       Anchor['riak::start'],
@@ -297,17 +306,17 @@ class riak (
 
   user { 'riak':
     ensure  => ['present'],
-    system => true,
+    system  => true,
     gid     => 'riak',
     home    => $data_dir,
-    uid => $riak_uid,
+    uid     => $riak_uid,
     require => [
       Group['riak'],
       Anchor['riak::start'],
     ],
     before  => Anchor['riak::end'],
   }
-  
+
   if ( $riak2 ) {
     service { 'riak':
       ensure     => $manage_service_ensure,
