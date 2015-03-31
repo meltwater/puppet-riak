@@ -37,36 +37,39 @@ class riak::appconfig(
   $appcfg = $riak2 ? {
     true           => merge_hashes({
       anti_entropy => 'active',
+      anti_entropy => {
+        data_dir   => "${riak::data_dir}/anti_entropy",
+      },
       bitcask      => {
         data_root  => "${riak::data_dir}/bitcask",
-        io_mode    => erlang
+        io_mode    => erlang,
       },
       distributed_cookie         => 'riak',
-      dtrace                     => 'off',
+      dtrace                     => '__atom_off',
       erlang                     => {
         async_threads            => 64,
         distribution_buffer_size => '64MB',
         max_ports                => 65536,
         schedulers               => {
           compaction_of_load     => false,
-          force_wakeup_interval  => 500
+          force_wakeup_interval  => 500,
         }
       },
       leveldb          => {
         maximum_memory => {
-          percent      => 70
+          percent      => 70,
         }
       },
       listener     => {
         http       => {
-          internal => '0.0.0.0:8098'
+          internal => '0.0.0.0:8098',
         },
         protobuf => {
-          internal => '0.0.0.0:8087'
+          internal => '0.0.0.0:8087',
         }
       },
       'log.console' => 'file',
-      'log.crash'         => 'on',
+      'log.crash'         => '__atom_on',
       log         => {
         console => {
           file  => "${riak::log_dir}/console.log",
@@ -88,16 +91,24 @@ class riak::appconfig(
         format              => 1,
         siblings            => {
           maximum           => 100,
-          warning_threshold => 25
+          warning_threshold => 25,
         },
         size      => {
           maximum           => '50MB',
-          warning_threshold => '5MB'
+          warning_threshold => '5MB',
         }
       },
-      riak_control             => 'off',
+      riak_control             => '__atom_off',
+      riak_control  => {
+        auth  => {
+          mode    => 'off',
+        }
+      },
       ring_size                => 256,
-      search                   => 'off',
+      ring        => {
+        state_dir           => "${$riak::data_dir}/ring",
+      },
+      search                   => '__atom_off',
       platform_bin_dir         => $riak::params::bin_dir,
       platform_data_dir        => $riak::data_dir,
       platform_etc_dir         => $riak::etc_dir,
@@ -147,7 +158,7 @@ class riak::appconfig(
         enabled => false,
       },
       merge_index => {
-        data_root            => "${$riak::data_dir}/merge_index",
+        data_root            => "${riak::data_dir}/merge_index",
         buffer_rollover_size => 1048576,
         max_compact_segments => 20,
       },
@@ -155,7 +166,12 @@ class riak::appconfig(
         data_root => "${$riak::data_dir}/bitcask",
       },
       leveldb => {
-        data_root => "${$riak::data_dir}/leveldb",
+        data_root             => "${riak::data_dir}/leveldb",
+        verify_checksums      => '__atom_on',
+        verify_compaction     => '__atom_on',
+        write_buffer_size_min => 104857600,
+        write_buffer_size_max => 209715200,
+        bloomfilter           => '__atom_on',
       },
       lager => {
         handlers => {
