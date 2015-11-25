@@ -70,6 +70,7 @@ class { '::riak':
   service_name   => 'riak',   # default
   manage_package => true,     # default
   manage_repo    => true,     # default
+  manage_sudo    => true,     # default
   version        => 'latest', # default, use a package version if desired
   # settings in the settings hash are written directly to settings.conf.
   settings       => {
@@ -116,6 +117,11 @@ Default: `true`
 ####`manage_repo`
 
 Whether to setup and enable the remote yum or apt package repos from which Riak will be installed. The repo is hosted at [packagecloud.io.](https://packagecloud.io) If you set this to `false` the Riak packages will need to be present in your existing package repos.
+Default: `true`
+
+####`manage_sudo`
+
+Whether to ensure the "sudo" package is installed.
 Default: `true`
 
 ####`version`

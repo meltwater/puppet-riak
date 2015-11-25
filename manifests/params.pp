@@ -7,6 +7,7 @@ class riak::params {
   $version             = 'present' # setting to latest could result in unplanned upgrades
   $manage_repo         = true
   $manage_package      = true
+  $manage_sudo         = true
   $riak_conf           = '/etc/riak/riak.conf'
   $riak_user           = 'riak'
   $riak_group          = 'riak'
