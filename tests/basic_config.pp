@@ -16,6 +16,7 @@ class { '::riak':
   service_name   => 'riak',
   manage_package => true,
   manage_repo    => true,
+  manage_sudo    => true,
   version        => 'latest',
   settings       => {
     'log.syslog'                 => 'on',

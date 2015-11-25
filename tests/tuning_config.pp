@@ -5,6 +5,7 @@ class { '::riak':
   service_name        => 'riak',
   manage_package      => true,
   manage_repo         => true,
+  manage_sudo         => true,
   version             => 'latest',
   ulimits_nofile_soft => 88536,
   ulimits_nofile_hard => 98536,
