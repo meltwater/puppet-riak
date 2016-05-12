@@ -8,6 +8,6 @@ class riak::install {
   }
   package { $::riak::package_name:
     ensure => $::riak::version,
-    before => Service[$::riak::service_name],
+    # before => Service[$::riak::service_name],
   }
 }
