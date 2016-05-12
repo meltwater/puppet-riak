@@ -21,6 +21,6 @@ class riak (
     Package[$::riak::package_name] ~> File[$::riak::params::riak_conf]
   }
   class { '::riak::config': } ~>
+  class { '::riak::service': } ->
   Class['::riak']
-  #class { '::riak::service': } ->
 }

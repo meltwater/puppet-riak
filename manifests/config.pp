@@ -11,8 +11,8 @@ class riak::config {
     group   => $::riak::params::riak_group,
     mode    => '0644',
     content => template('riak/riak.conf.erb'),
-    # notify  => Service[$::riak::service_name],
-    # before  => Service[$::riak::service_name],
+    notify  => Service[$::riak::service_name],
+    before  => Service[$::riak::service_name],
   }
   # set ulimits max file handles
   riak::tuning::limits {
